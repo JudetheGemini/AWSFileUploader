@@ -1,15 +1,27 @@
 #! /bin/bash
 
+file=$1
 
+if [[ -e "$file" ]]; then
+    echo "File Existence Confirmed"
+else
+    echo "File does not exist or error in file path"
+    exit 1
+fi
+
+# listing existing s3 buckets
 bucket_list=$(aws s3 ls | awk '{print $3}')
 
+# pushing buckets into an iterable list
 buckets=($bucket_list)
+
 # options for user to make choice on creating a new bucket or uploading to an existing bucket
 options=("Use existing bucket" "Create new bucket" "Abort")
 
+# prompt to ask user which option to proceed with
 echo "Would you like to upload file to an existing bucket or create a new bucket? "
 
-
+# case statements handling the different user choices
 select opt in "${options[@]}"
 do
     case $opt in
@@ -20,9 +32,15 @@ do
         do  
             echo $i
         done
+        read -p "Choose existing bucket to use from the list of buckets which are present in your AWS account above: " existing_bucket
+        echo "Uploading file to $existing_bucket ...."
+        aws s3 cp "$file" "s3://$existing_bucket/$file"
+        break
         ;;
         "Create new bucket")
-        echo "Creating a new bucket"
+        read -p "Enter name of new bucket: " new_bucket
+        echo "Creating a new bucket called $new_bucket"
+        aws s3 mb s3://"$new_bucket"
         ;;        
         *) break
     esac
