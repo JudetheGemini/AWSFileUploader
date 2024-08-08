@@ -34,7 +34,24 @@ do
             done
             read -p "Choose existing bucket to use from the list of buckets which are present in your AWS account above: " existing_bucket
             echo "Uploading file to $existing_bucket ...."
-            aws s3 cp "$file" "s3://$existing_bucket/$file"
+            aws s3 cp "$file" "s3://$existing_bucket/$file" &
+            upload_pid=$!
+
+            # Progress bar function
+            progress_bar() {
+                while kill -0 $upload_pid 2>/dev/null; do
+                    for i in {1..50}; do
+                        echo -n "#"
+                        sleep 0.1
+                    done
+                    echo -ne "\r"
+                done
+                echo
+            }
+
+            progress_bar
+            wait $upload_pid
+            echo "Upload complete."
             break
             ;;
         "Create new bucket")
