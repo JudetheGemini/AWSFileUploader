@@ -1,7 +1,24 @@
 #! /bin/bash
 
+# Progress bar function
+progress_bar() {
+    while kill -0 $upload_pid 2>/dev/null; do
+        for i in {1..50}; do
+            echo -n "#"
+            sleep 0.05
+        done
+        echo -ne "\r"
+    done
+    echo
+}
+
+# assigning script argument to a variable
 file=$1
 
+# delay
+sleep 1
+
+# condition to check for file existence
 if [[ -e "$file" ]]; then
     echo "File Existence Confirmed"
 else
@@ -26,6 +43,7 @@ select opt in "${options[@]}"
 do
     case $opt in
         "Use existing bucket")
+            found=0
             echo "Using existing bucket"
             # list s3 buckets present in users aws account
             for i in "${buckets[@]}"
@@ -33,25 +51,34 @@ do
                 echo $i
             done
             read -p "Choose existing bucket to use from the list of buckets which are present in your AWS account above: " existing_bucket
+
+            # check if valid bucket selection was made
+            for i in "${buckets[@]}"; 
+            do
+                if [[ "$i" == "$existing_bucket" ]]; then
+                    found=1
+                    break
+                fi
+            done
+
+            # Check the result
+            if [[ $found -eq 1 ]]; then
+                echo "$existing_bucket is a valid bucket"
+            else
+                echo "Please confirm that the $existing_bucket bucket exists or check for typo"
+                break;
+                exit 1
+            fi
+            sleep 1
             echo "Uploading file to $existing_bucket ...."
+            sleep 0.5
             aws s3 cp "$file" "s3://$existing_bucket/$file" &
             upload_pid=$!
-
-            # Progress bar function
-            progress_bar() {
-                while kill -0 $upload_pid 2>/dev/null; do
-                    for i in {1..50}; do
-                        echo -n "#"
-                        sleep 0.1
-                    done
-                    echo -ne "\r"
-                done
-                echo
-            }
-
             progress_bar
             wait $upload_pid
-            echo "Upload complete."
+            echo "File Upload complete."
+            sleep 1
+            echo "Link to your uploaded file: https://$existing_bucket.s3.amazonaws.com/$file"
             break
             ;;
         "Create new bucket")
@@ -75,8 +102,13 @@ do
             fi
             # Uploading file to new bucket
             echo "Uploading file to $new_bucket"
-            aws s3 cp "$file" "s3://$new_bucket/$file"
+            aws s3 cp "$file" "s3://$new_bucket/$file" &
+            upload_pid=$!
+            progress_bar
+            wait $upload_pid
             echo "File Uploaded Successfully"
+            sleep 1
+            echo "Link to your uploaded file: https://$new_bucket.s3.amazonaws.com/$file"
             break
             ;;   
         "Abort")
