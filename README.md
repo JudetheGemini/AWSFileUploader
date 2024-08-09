@@ -32,12 +32,13 @@ You will be prompted with a series of choices such as:
     
 Upon successful completion of a file upload, the file URL will be displayed.
 
-#### Terms
+### Definition of Terms
     - Bucket: A top-level Amazon S3 folder
     - Prefix: An Amazon S3 folder in a bucket
     - Object: Any item that's hosted in an Amazon S3 bucket
 
 
-#### Note
-    - For large object uploads: the AWS CLI will automatically perform a multipart upload. - You can not resume a failed upload.
+### Note
+    - For large object uploads: the AWS CLI will automatically perform a multipart upload 
+    - You can not resume a failed upload.
     - Creating new buckets: bucket names must be globally unique (across all of Amazon S3) and should be DNS compliant.
