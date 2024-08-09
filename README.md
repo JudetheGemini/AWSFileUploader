@@ -13,7 +13,7 @@ Clone the repository into your computer (Mac, Windows, or GNU Linux)
 git clone https://github.com/JudetheGemini/AWSFileUploader.git (over https)
 git clone git@github.com:JudetheGemini/AWSFileUploader.git (over SSH)
 ```
-Add directory to your system PATH (The directory where the system searches for executables)
+Add directory to your system PATH (The directory where the system searches for executables).
 Ensure you use the right link to where the folder is located on your system.
 ```sh
 PATH=$PATH:/AWSFileUploader
@@ -27,8 +27,8 @@ uploadfile /path/to/file
 ```
 
 You will be prompted with a series of choices such as:
-    - Uploading to a new bucket
-    - Uploading to an existing bucket
+- Uploading to a new bucket
+- Uploading to an existing bucket
     
 Upon successful completion of a file upload, the file URL will be displayed.
 
